@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <script src="https://code.jquery.com/jquery-3.1.1.min.js"></script>
+    <script src="https://unpkg.com/axios/dist/axios.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/semantic-ui/2.4.1/semantic.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/semantic-ui-range@1.0.1/range.min.js"></script>
+    <script src="/socket.io/socket.io.js"></script>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/semantic-ui-range@1.0.1/range.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/semantic-ui/2.4.1/semantic.min.css"/>
+    <link rel="stylesheet" type="text/css" href="/static/css/style.css">
+    <title>캐치마인드</title>
+</head>
+
+<body>
+    <div class="ui center aligned container">
+        <h1 class="header-title">캐치마인드</h1>
+        <div id="game-info-area" class="ui segment hide">
+            <h3>방 이름: <span id="room-name"></span></h3>
+            <h3 class="inline">방 URL: </h3>
+            <a id="room-url" href="#" onclick="window.open(this.textContent, '_blank');"></a>
+        </div>
+        <div id="game-draw-area" class="hide">
+            <div id="word-segment" class="ui segment">
+                <div class="ui grid">
+                    <div class="eight wide column"><h2>제시어</h2></div>
+                    <div class="eight wide column"><h2>상대 정답</h2></div>
+                </div>
+                <div class="ui divider"></div>
+                <div class="ui grid">
+                    <div class="eight wide column"><h3 id="presented-word"></h3></div>
+                    <div class="eight wide column"><h3 id="participant-word"></h3></div>
+                </div>
+            </div>
+            <div id="canvas-segment" class="ui segment">
+                <div class="ui image">
+                    <a class="ui grey ribbon label" onclick="drawEventHandler('RESET', null);">
+                        <i class="eraser icon"></i>
+                    </a>
+                    <canvas class="canvas" id="draw-canvas" width="700" height="500"></canvas>
+                </div>
+                <div>
+                    <div class="ui black button" onclick="drawEventHandler('CHANGE_COLOR', this);"></div>
+                    <div class="ui red button" onclick="drawEventHandler('CHANGE_COLOR', this);"></div>
+                    <div class="ui green button" onclick="drawEventHandler('CHANGE_COLOR', this);"></div>
+                    <div class="ui blue button" onclick="drawEventHandler('CHANGE_COLOR', this);"></div>
+                    <div class="ui button" onclick="drawEventHandler('CHANGE_COLOR', document.body);"></div>
+                    <div class="ui range" id="size-slider"></div> 
+                </div>
+            </div>
+        </div>
+        <div id="game-guess-area" class="hide">
+            <div id="canvas-segment" class="ui segment">
+                <canvas class="canvas" id="guess-canvas" width="700" height="500"></canvas>
+            </div>
+            <div class="ui segment">
+                <div class="ui fluid input massive">
+                    <input type="text" placeholder="그림을 맞춰보세요..." onchange="getGuessText(this);">
+                </div>
+            </div>
+        </div>
+        <div id="connect-area">
+            <div class="ui segment" id="room-segment">
+                <h2>참여하기</h2>
+                <div class="ui divider"></div>
+                <div class="ui action input">
+                    <input type="text" id="room-id-input" placeholder="방 ID를 입력하세요">
+                    <button class="ui button" onclick="connectRoom();">입장</button>
+                </div>
+                <h2>방 만들기</h2>
+                <div class="ui divider"></div>
+                <div class="ui action input">
+                    <input type="text" id="room-name-input" placeholder="방 이름을 입력하세요">
+                    <button class="ui button" onclick="createRoom();">생성</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    <script src="/static/js/common.js"></script>
+    <script>
+        const connectId = '<%= connectId %>'
+        if (connectId) {
+            document.querySelector('#room-id-input').value = connectId;
+            connectRoom();
+        }
+    </script>
+</body>
+
+</html>
